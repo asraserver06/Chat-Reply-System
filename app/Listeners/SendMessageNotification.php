@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Listeners;
+
+use App\Events\MessageSent;
+use App\Notifications\NewMessageNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class SendMessageNotification implements ShouldQueue
+{
+    public string $queue = 'notifications';
+
+    public function handle(MessageSent $event): void
+    {
+        $message = $event->message->loadMissing('chat.user');
+        $recipient = $message->chat->user;
+
+        // Don't notify the sender about their own message
+        if ($recipient && $recipient->id !== $message->user_id) {
+            $recipient->notify(new NewMessageNotification($message));
+        }
+    }
+}
