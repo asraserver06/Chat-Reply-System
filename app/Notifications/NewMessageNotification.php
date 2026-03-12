@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewMessageNotification extends Notification implements ShouldQueue
+class NewMessageNotification extends Notification
 {
     use Queueable;
 
@@ -17,11 +17,18 @@ class NewMessageNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * Deliver via mail + database so users see a bell-notification in the UI.
+     * Database channel always; mail only when configured.
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        $channels = ['database'];
+
+        // Add mail only if a real mailer is configured (not 'log')
+        if (config('mail.mailer') !== 'log') {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     public function toMail(object $notifiable): MailMessage
