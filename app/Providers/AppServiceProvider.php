@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\MessageSent;
+use App\Listeners\BroadcastMessageSent;
+use App\Listeners\SendMessageNotification;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,11 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        use App\Events\MessageSent;
-        use App\Listeners\BroadcastMessageSent;
-        use App\Listeners\SendMessageNotification;
-        use Illuminate\Support\Facades\Event;
-
         Event::listen(MessageSent::class, BroadcastMessageSent::class);
         Event::listen(MessageSent::class, SendMessageNotification::class);
     }

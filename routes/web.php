@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MessageManagementController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SubscriptionManagementController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\MessageController as UserMessageController;
+use App\Http\Controllers\User\SubscriptionController as UserSubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -68,24 +75,23 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
-|
-| Only users with "Admin" role can access these routes.
-| You can add more controllers as needed for admin functionality.
-|
 */
-Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard'); // Your admin dashboard view
-    })->name('admin.dashboard');
+Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/admin/users', function () {
-        return view('admin.users'); // Manage users page
-    })->name('admin.users');
+    // Dashboard
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // Example: permission-protected route
-    Route::get('/admin/manage-users', function () {
-        return 'You can manage users!';
-    })->middleware('permission:manage users');
+    // User management
+    Route::get('/users',          [UserManagementController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}',   [UserManagementController::class, 'show'])->name('users.show');
+    Route::delete('/users/{user}',[UserManagementController::class, 'destroy'])->name('users.destroy');
+
+    // Chat / Message management
+    Route::get('/messages',            [MessageManagementController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{chat}',     [MessageManagementController::class, 'show'])->name('messages.show');
+
+    // Subscription management
+    Route::get('/subscriptions', [SubscriptionManagementController::class, 'index'])->name('subscriptions.index');
 });
 
 
@@ -97,17 +103,21 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 | Only users with "User" role can access these routes.
 |
 */
-Route::middleware(['auth', 'role:User'])->group(function () {
-    Route::get('/user/dashboard', function () {
-        return view('user.dashboard'); // Your user dashboard view
-    })->name('user.dashboard');
+Route::middleware(['auth', 'verified', 'role:User'])->prefix('user')->name('user.')->group(function () {
 
-    Route::get('/user/messages', function () {
-        return view('user.messages'); // User messages page
-    })->name('user.messages');
+    // Dashboard
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
-    // Example: permission-protected route
-    Route::get('/user/send-message', function () {
-        return 'You can send messages!';
-    })->middleware('permission:send messages');
+    // Chat threads
+    Route::get('/chats',              [UserMessageController::class, 'index'])->name('chats.index');
+    Route::post('/chats',             [UserMessageController::class, 'store'])->name('chats.store');
+    Route::get('/chats/{chat}',       [UserMessageController::class, 'show'])->name('chats.show');
+    Route::delete('/chats/{chat}',    [UserMessageController::class, 'destroy'])->name('chats.destroy');
+    Route::post('/chats/{chat}/send', [UserMessageController::class, 'sendMessage'])->name('chats.send');
+
+    // Subscription
+    Route::get('/subscription',         [UserSubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/subscription',        [UserSubscriptionController::class, 'subscribe'])->name('subscription.subscribe');
+    Route::post('/subscription/cancel', [UserSubscriptionController::class, 'cancel'])->name('subscription.cancel');
+    Route::post('/subscription/resume', [UserSubscriptionController::class, 'resume'])->name('subscription.resume');
 });

@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
         // Call Roles and Permissions Seeder
         $this->call(RolePermissionSeeder::class);
 
+        // Seed subscription plans (Free / Basic / Pro)
+        $this->call(SubscriptionPlanSeeder::class);
+
+        // Seed automated reply keyword rules
+        $this->call(AutoReplySeeder::class);
+
         // Create Admin User
         $admin = User::create([
             'name' => 'Admin',
