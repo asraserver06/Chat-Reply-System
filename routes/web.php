@@ -8,8 +8,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\MessageController as UserMessageController;
 use App\Http\Controllers\User\SubscriptionController as UserSubscriptionController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,26 +51,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Email Verification Routes
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->name('verification.notice');
-
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect('/dashboard');
-    })->middleware(['auth', 'signed'])->name('verification.verify');
-
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('message', 'Verification link sent!');
-    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
 
@@ -113,11 +92,12 @@ Route::middleware(['auth', 'verified', 'role:User'])->prefix('user')->name('user
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
     // Chat threads
-    Route::get('/chats',              [UserMessageController::class, 'index'])->name('chats.index');
-    Route::post('/chats',             [UserMessageController::class, 'store'])->name('chats.store');
-    Route::get('/chats/{chat}',       [UserMessageController::class, 'show'])->name('chats.show');
-    Route::delete('/chats/{chat}',    [UserMessageController::class, 'destroy'])->name('chats.destroy');
-    Route::post('/chats/{chat}/send', [UserMessageController::class, 'sendMessage'])->name('chats.send');
+    Route::get('/chats',                        [UserMessageController::class, 'index'])->name('chats.index');
+    Route::post('/chats',                       [UserMessageController::class, 'store'])->name('chats.store');
+    Route::get('/chats/{chat}',                 [UserMessageController::class, 'show'])->name('chats.show');
+    Route::delete('/chats/{chat}',              [UserMessageController::class, 'destroy'])->name('chats.destroy');
+    Route::post('/chats/{chat}/send',           [UserMessageController::class, 'sendMessage'])->name('chats.send');
+    Route::delete('/messages/{message}',        [UserMessageController::class, 'deleteMessage'])->name('messages.destroy');
 
     // Subscription
     Route::get('/subscription',         [UserSubscriptionController::class, 'index'])->name('subscription.index');
