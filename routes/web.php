@@ -65,9 +65,11 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // User management
-    Route::get('/users',          [UserManagementController::class, 'index'])->name('users.index');
-    Route::get('/users/{user}',   [UserManagementController::class, 'show'])->name('users.show');
-    Route::delete('/users/{user}',[UserManagementController::class, 'destroy'])->name('users.destroy');
+    Route::middleware(['permission:manage-users'])->group(function () {
+        Route::get('/users',          [UserManagementController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}',   [UserManagementController::class, 'show'])->name('users.show');
+        Route::delete('/users/{user}',[UserManagementController::class, 'destroy'])->name('users.destroy');
+    });
 
     // Chat / Message management
     Route::get('/messages',            [MessageManagementController::class, 'index'])->name('messages.index');

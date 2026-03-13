@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Define permissions
-        $permissions = ['send messages', 'view messages', 'manage users'];
+        $permissions = ['send messages', 'view messages', 'manage-users'];
 
         // Create permissions if they don't exist
         foreach ($permissions as $permission) {
