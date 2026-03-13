@@ -36,4 +36,21 @@ class Chat extends Model
     {
         return $this->messages()->latest()->first();
     }
+
+    // ─── Lifecycle ────────────────────────────────────────────────────────────
+
+    protected static function booted(): void
+    {
+        // Permanently delete all messages when a chat is force-deleted
+        static::forceDeleting(function (Chat $chat) {
+            $chat->messages()->forceDelete();
+        });
+
+        // Soft-delete all messages when a chat is soft-deleted
+        static::deleting(function (Chat $chat) {
+            if (! $chat->isForceDeleting()) {
+                $chat->messages()->delete();
+            }
+        });
+    }
 }

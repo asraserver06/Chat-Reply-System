@@ -41,10 +41,15 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Every self-registered user gets the User role
+        $user->assignRole('User');
+
+        // Fire Registered event → sends the verification email
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to the email verification notice page
+        return redirect()->route('verification.notice');
     }
 }

@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class SendMessageNotification implements ShouldQueue
 {
     public string $queue = 'notifications';
-
     public function handle(MessageSent $event): void
     {
         $message = $event->message->loadMissing('chat.user');
@@ -17,6 +16,7 @@ class SendMessageNotification implements ShouldQueue
 
         // Don't notify the sender about their own message
         if ($recipient && $recipient->id !== $message->user_id) {
+            // Use 'database' channel only (no mail required in dev)
             $recipient->notify(new NewMessageNotification($message));
         }
     }
