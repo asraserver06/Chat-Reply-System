@@ -41,7 +41,7 @@
                 $isMine = $message->user_id === auth()->id();
                 $isAuto = $message->is_auto_reply;
             @endphp
-            <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }} group">
+            <div id="msg-{{ $message->id }}" class="flex {{ $isMine ? 'justify-end' : 'justify-start' }} group">
                 <div class="max-w-[75%]">
                     {{-- Author label --}}
                     <div class="text-xs text-gray-400 mb-1 {{ $isMine ? 'text-right' : 'text-left' }}">
@@ -106,4 +106,66 @@
     const chatMessages = document.getElementById('chatMessages');
     if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 </script>
+
+{{-- Real-time updates with Laravel Echo --}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentUserId = {{ auth()->id() }};
+        const chatId = {{ $chat->id }};
+        const chatMessages = document.getElementById('chatMessages');
+
+        if (window.Echo) {
+            window.Echo.channel('chat.' + chatId)
+                .listen('.message.sent', (e) => {
+                    console.log('New message received:', e);
+
+                    // Skip if message already exists (e.g. from page refresh after sending)
+                    if (document.getElementById('msg-' + e.id)) return;
+
+                    // Skip if it's our own message and we just refreshed (though the ID check handles it)
+                    // But if we want to support true SPA-like sending, we'd handle it here.
+                    // For now, we mainly want to show AUTO-REPLIES and messages from OTHERS.
+
+                    const isMine = e.user_id === currentUserId;
+                    const isAuto = e.is_auto_reply;
+
+                    const messageHtml = `
+                        <div id="msg-${e.id}" class="flex ${isMine ? 'justify-end' : 'justify-start'} group animate-fade-in">
+                            <div class="max-w-[75%]">
+                                <div class="text-xs text-gray-400 mb-1 ${isMine ? 'text-right' : 'text-left'}">
+                                    ${isAuto ? '🤖 Auto Reply' : (isMine ? 'You' : (e.user ? e.user.name : 'System'))}
+                                    · ${new Date(e.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </div>
+                                <div class="flex items-end gap-1 ${isMine ? 'flex-row-reverse' : ''}">
+                                    <div class="px-4 py-2.5 rounded-2xl text-sm leading-relaxed
+                                        ${isMine
+                                            ? 'bg-indigo-600 text-white rounded-br-none'
+                                            : (isAuto
+                                                ? 'bg-amber-50 border border-amber-200 text-amber-900 rounded-bl-none'
+                                                : 'bg-gray-100 text-gray-800 rounded-bl-none')}">
+                                        ${e.body}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    chatMessages.insertAdjacentHTML('beforeend', messageHtml);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+        } else {
+            console.error('Laravel Echo not found. Real-time updates disabled.');
+        }
+    });
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
 @endsection

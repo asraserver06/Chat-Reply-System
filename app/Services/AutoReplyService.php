@@ -41,6 +41,9 @@ class AutoReplyService
             'is_auto_reply' => true,
         ]);
 
+        // Fire event so the auto-reply is broadcasted to the frontend in real-time
+        event(new \App\Events\MessageSent($reply));
+
         return $reply;
     }
 }

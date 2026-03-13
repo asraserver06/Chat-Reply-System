@@ -5,10 +5,10 @@ namespace App\DTOs;
 class MessageDTO
 {
     public function __construct(
-        public readonly int    $chatId,
-        public readonly int    $userId,
-        public readonly string $body,
-        public readonly bool   $isAutoReply = false,
+        public readonly int     $chatId,
+        public readonly ?int    $userId,
+        public readonly string  $body,
+        public readonly bool    $isAutoReply = false,
     ) {}
 
     public static function fromArray(array $data): self
