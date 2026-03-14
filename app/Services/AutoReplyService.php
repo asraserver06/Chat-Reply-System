@@ -26,18 +26,18 @@ class AutoReplyService
     {
         $matches = $this->findMatches($message->body);
 
-        if ($matches->isEmpty()) {
-            return null;
+        $replyBody = "I'm sorry, I couldn't understand that. Please wait for a human representative or try asking something else.";
+
+        // If we found rules that matched the keyword, override the fallback with the highest priority rule.
+        if ($matches->isNotEmpty()) {
+            $rule = $matches->first();
+            $replyBody = $rule->reply_body;
         }
 
-        /** @var AutomatedReply $rule */
-        $rule = $matches->first();
-
-        /** @var Message $reply */
         $reply = Message::create([
             'chat_id'       => $message->chat_id,
             'user_id'       => null,     // system reply – no user
-            'body'          => $rule->reply_body,
+            'body'          => $replyBody,
             'is_auto_reply' => true,
         ]);
 
