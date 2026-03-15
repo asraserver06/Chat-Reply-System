@@ -1,67 +1,224 @@
-# Chat Reply System (CRS) – Laravel Project
+# Chat Reply System (CRS)
 
-## 1. Project Overview
-CRS (Chat Reply System) is a Laravel-based SaaS platform that allows users to send and receive chat messages with automated replies and real-time updates. The system demonstrates modern Laravel development practices including authentication, role-based access control, subscription billing, real-time notifications, background job processing, and API-driven architecture.
+Chat Reply System (CRS) is a web-based application designed to help businesses manage customer conversations efficiently. It allows users to send messages while administrators can manage and respond to those messages through a centralized dashboard.
 
-## 2. Technologies Used
-- **Laravel** – Backend framework
-- **Spatie Permission** – Role and permission management
-- **Laravel Cashier** – Stripe subscription billing
-- **Stripe** – Payment processing
-- **Pusher** – Real-time notifications
-- **Laravel Queues** – Background job processing
-- **Laravel Events** – Event-driven architecture
-- **Laravel Policies** – Authorization control
-- **Laravel Sanctum** – API authentication
+The system improves communication management by organizing user messages, enabling quick responses, and providing real-time notifications. CRS is built using modern technologies such as Laravel, MySQL, and API-based architecture to provide a scalable and secure messaging platform.
 
-## 3. Core Modules
-- **User Management Module** – Registration, login, email verification, profile management.
-- **Role & Permission Module** – Roles, permissions, and route protection using Spatie.
-- **Chat Management Module** – Chat threads, sending messages, automated replies.
-- **Real-Time Notification Module** – Instant updates using Pusher broadcasting.
-- **Subscription Management Module** – Plan subscription, upgrades, downgrades using Stripe Cashier.
-- **Notification System** – Email and database notifications.
-- **Admin Management Module** – Admin dashboard to manage users, chats, and subscriptions.
-- **Queue & Job Processing** – Background processing of heavy tasks (e.g., auto-replies).
-- **API Module** – REST APIs secured with Sanctum authentication.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-success.svg)
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat&logo=php&logoColor=white)
 
-## 4. Subscription Plans
-- **Free** – Limited messages (50/month)
-- **Basic** – Unlimited messages
-- **Pro** – Advanced chat analytics and premium features
+---
 
-## 5. Event Driven Architecture
-**Example Flow:**
-`User Sends Message` → `MessageSent Event Fired` → `Listener Broadcasts Event` → `Frontend Receives Update (Pusher)`
+## 📖 Project Overview
 
-**Auto-Reply Flow:**
-`Message Received` → `ProcessAutoReply (Queue Job)` → `AutoReplyService Matches Keyword` → `Reply Message Created` → `MessageSent Event (Broadcasted)`
+The main goal of CRS is to simplify communication between users and administrators. The system provides:
 
-## 6. Security & Authorization
-- **Policies**: `ChatPolicy`, `UserPolicy`, `SubscriptionPolicy`
-- **Middleware**: `auth`, `role:Admin`, `permission:manage-users`
-- **Rate Limiting**: Applied to APIs to prevent abuse.
+- A structured messaging platform
+- Subscription-based services
+- Real-time notifications
+- Secure authentication
+- API support for integration
 
-## 7. Folder Structure
-```text
-app/
-├── Actions/        # Business logic classes
-├── DTOs/           # Data Transfer Objects
-├── Events/         # Laravel Events (e.g., MessageSent)
-├── Jobs/           # Queueable Jobs (e.g., ProcessAutoReply)
-├── Listeners/      # Event Listeners
-├── Notifications/  # App Notifications
-├── Policies/       # Authorization Policies
-├── Repositories/   # Data Access Layer
-├── Services/       # Complex domain logic
-└── Traits/         # Reusable traits (e.g., HasSubscriptionPlan)
+CRS can be used by businesses that need an organized system for handling customer queries and responses.
+
+## ✨ Features
+
+- **User Registration and Login:** Secure user authentication.
+- **Role Dashboards:** Distinct Admin and User dashboards.
+- **Messaging System:** Message sending and instantaneous auto-reply system.
+- **Subscription Management:** Tiered plans powered by Stripe Cashier.
+- **Real-Time Notifications:** Instant event broadcasting via Pusher.
+- **API Access:** Secured API authentication using Laravel Sanctum.
+- **Database Driven:** Robust, structured database schema for chats, messages, and payments.
+
+---
+
+## 🏗 System Architecture
+
+CRS follows the **MVC (Model-View-Controller)** architecture provided by Laravel.
+
+### Models
+Handles database interactions.
+- `User`
+- `Message` / `Chat`
+- `Subscription` / `SubscriptionPlan`
+- `Payment`
+
+### Views
+Responsible for displaying information to users (Blade/Bootstrap).
+- Dashboard pages
+- Message interfaces
+- Subscription pages
+
+### Controllers
+Handles application logic and processes user requests.
+- `DashboardController`
+- `MessageController`
+- `SubscriptionController`
+- `UserManagementController`
+
+---
+
+## 🔄 System Workflow
+
+1. User registers or logs into the system.
+2. User subscribes to a specific service plan.
+3. User opens a chat thread and sends a message.
+4. Auto-Reply system responds instantly via synchronous background checks.
+5. Admin receives the message in the admin dashboard.
+6. Admin replies directly to the user.
+7. User receives the admin's reply along with real-time notifications.
+
+---
+
+## 💻 Technologies Used
+
+| Technology | Purpose |
+|------------|---------|
+| **Laravel** | Backend framework |
+| **PHP** | Server-side programming |
+| **MySQL** | Database |
+| **Stripe** | Subscription payments |
+| **Pusher** | Real-time notifications |
+| **Laravel Sanctum** | API authentication |
+| **Bootstrap / Blade** | Frontend interface |
+| **Git & GitHub** | Version control & Code hosting |
+
+---
+
+## 🚀 Installation Guide
+
+Follow these steps to run CRS locally.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/asraserver06/Chat-Reply-System.git
 ```
 
-## 8. Deliverables
-- [x] Complete Laravel project
-- [x] Database migrations & Seeders
-- [x] Role & Permission system (Spatie)
-- [x] Working Stripe subscription system (Cashier)
-- [x] Real-time chat events (Pusher)
-- [x] Queue jobs processing
-- [x] Comprehensive Documentation
+### 2. Navigate to Project Folder
+```bash
+cd Chat-Reply-System
+```
+
+### 3. Install Dependencies
+```bash
+composer install
+npm install && npm run build
+```
+
+### 4. Setup Environment File
+```bash
+cp .env.example .env
+```
+
+### 5. Generate Application Key
+```bash
+php artisan key:generate
+```
+
+### 6. Configure Database
+Open `.env` and update:
+```env
+DB_CONNECTION=mysql
+DB_DATABASE=crs_database
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 7. Run Database Migrations
+```bash
+php artisan migrate
+```
+
+### 8. Run Seeders (optional)
+```bash
+php artisan db:seed
+```
+
+### 9. Start Development Server
+```bash
+php artisan serve
+```
+
+The system will run on: `http://127.0.0.1:8000`
+
+---
+
+## 🔌 API Documentation
+
+CRS supports API access protected by Laravel Sanctum object tokens.
+
+**Example API endpoints:**
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/login` | Authenticate user |
+| GET | `/api/chats/{chat}/messages` | Retrieve chat messages |
+| POST | `/api/chats/{chat}/messages` | Send message |
+| GET | `/api/user/subscription` | Check subscription |
+
+API requests require authentication Bearer tokens generated by Sanctum.
+
+---
+
+## 🗄 Database Schema
+
+Main tables used in CRS:
+
+| Table | Description |
+|-------|-------------|
+| `users` | Stores user information |
+| `messages` / `chats` | Stores user chat threads and messages |
+| `subscription_plans` / `subscriptions` | Stores Stripe pricing and active subscriptions |
+
+*Relationships:*
+- One user can have many chats, and send multiple messages.
+- One user can have one active Stripe subscription.
+- Payments are linked inherently to active subscriptions via Cashier.
+
+---
+
+## 🤝 Contribution Guidelines
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push the branch
+5. Create a Pull Request
+
+GitHub Issues can be used to report bugs or request features.  
+**Issue Tracker**: [https://github.com/asraserver06/Chat-Reply-System/issues](https://github.com/asraserver06/Chat-Reply-System/issues)
+
+---
+
+## 🆘 Support
+
+If you encounter any issues while using the system, you can get help by:
+- Opening an issue on GitHub
+- Checking the documentation
+- Contacting the project maintainer
+
+**GitHub Issues**: [https://github.com/asraserver06/Chat-Reply-System/issues](https://github.com/asraserver06/Chat-Reply-System/issues)
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+The license allows users to use, modify, and distribute the software while providing credit to the original author.
+
+---
+
+## 👨‍💻 Author
+
+**Asra Arshad**  
+Computer Science Student  
+*University of the Punjab*
+
+**Skills:**
+- Laravel Development
+- API Integration
+- Web Application Development
+- Database Management
